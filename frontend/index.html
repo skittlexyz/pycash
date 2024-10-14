@@ -26,7 +26,7 @@
     <script src="./main.js" defer></script>
     <style>
         .selected-line {
-            background-color: rgb(30, 41, 59);
+            background-color: rgb(30, 41, 59) !important;
         }
     </style>
 </head>
@@ -43,7 +43,7 @@
             </div>
         </header>
         <hr class="tw-my-4">
-        <section class="tw-w-full tw-flex tw-flex-col tw-gap-2">
+        <section class="tw-w-full tw-flex tw-flex-col tw-gap-2 tw-items-center">
             <div class="tw-flex tw-gap-2 tw-items-center tw-flex-wrap tw-w-full tw-justify-between gap-2">
                 <div class="tw-flex tw-gap-2 tw-items-center">
                     <p class="tw-text-center tw-m-0 tw-mr-2 tw-w-full">Date range:</p>
@@ -63,8 +63,8 @@
                             class="bi bi-arrow-up"></i></button>
                 </div>
             </div>
-            <hr>
-            <div class="tw-flex gap-4 tw-justify-center tw-items-start">
+            <hr class="tw-w-full">
+            <div id="summary" class="tw-w-full tw-flex tw-gap-4 tw-justify-between tw-items-start">
                 <select id="summary-date-range" class="form-select tw-w-min">
                     <option value="1" selected>All the time</option>
                     <option value="1">This month</option>
@@ -99,10 +99,10 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th scope="col" class="tw-w-[0]"><input class="form-check-input" type="checkbox"></th>
+                    <th scope="col" class="tw-w-[0]"><input id="all-lines-checkbox" class="form-check-input" type="checkbox"></th>
                     <th scope="col" class="tw-w-[0]">ID</th>
                     <th scope="col" class="tw-w-28">Value</th>
-                    <th scope="col" class="tw-w-24">Date</th>
+                    <th scope="col" class="tw-w-24">Date&nbsp;<i id="date-order-button" class="bi bi-arrow-down tw-cursor-pointer"></i></th>
                     <th scope="col">Description</th>
                 </tr>
             </thead>
