@@ -1,0 +1,11 @@
+numpy==2.1.2
+python-dotenv==1.0.1
+Flask==3.0.3
+Jinja2==3.1.4
+MarkupSafe==3.0.1
+Werkzeug==3.0.4
+blinker==1.8.2
+click==8.1.7
+colorama==0.4.6
+itsdangerous==2.2.0
+Flask-Cors==5.0.0

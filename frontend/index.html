@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pycash</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script>
+        tailwind.config = {
+            prefix: "tw-",
+            corePlugins: {
+                preflight: false,
+            }
+        }
+    </script>
+    <script src="./main.js" defer></script>
+    <style>
+        .selected-line {
+            background-color: rgb(30, 41, 59);
+        }
+    </style>
+</head>
+
+<body data-bs-theme="dark" class="tw-flex tw-flex-col tw-justify-center">
+    <main class="tw-top-0 tw-sticky tw-px-32 tw-py-6 tw-bg-[var(--bs-body-bg)] tw-shadow-xl">
+        <header class="tw-w-full tw-flex tw-justify-between tw-items-end">
+            <h1>pycash</h1>
+            <div class="tw-flex tw-gap-2">
+                <button id="refresh-button" type="button" class="btn btn-primary tw-flex tw-gap-2">Refresh<i
+                        class="bi bi-arrow-clockwise"></i></button>
+                <button id="configure-button" type="button" class="btn btn-secondary tw-flex tw-gap-2">Configure<i
+                        class="bi bi-gear"></i></button>
+            </div>
+        </header>
+        <hr class="tw-my-4">
+        <section class="tw-w-full tw-flex tw-flex-col tw-gap-2">
+            <div class="tw-flex tw-gap-2 tw-items-center tw-flex-wrap tw-w-full tw-justify-between gap-2">
+                <div class="tw-flex tw-gap-2 tw-items-center">
+                    <p class="tw-text-center tw-m-0 tw-mr-2 tw-w-full">Date range:</p>
+                    <input id="start-date" class="form-control" type="date" />
+                    <i class="bi bi-arrow-right"></i>
+                    <input id="end-date" class="form-control" type="date" />
+                </div>
+                <div class="tw-flex tw-gap-2 tw-items-center">
+                    <p class="tw-text-center tw-m-0 tw-mr-2">Options:</p>
+                    <button id="add-button" type="button" class="btn btn-success tw-flex tw-gap-2">Add<i
+                            class="bi bi-plus-lg"></i></button>
+                    <button id="delete-button" type="button" class="btn btn-danger tw-flex tw-gap-2">Delete<i
+                            class="bi bi-x-lg"></i></button>
+                    <button id="edit-button" type="button" class="btn btn-warning tw-flex tw-gap-2">Edit<i
+                            class="bi bi-pencil"></i></button>
+                    <button id="collapse-expand-button" type="button" class="btn btn-info"><i
+                            class="bi bi-arrow-up"></i></button>
+                </div>
+            </div>
+            <hr>
+            <div class="tw-flex gap-4 tw-justify-center tw-items-start">
+                <select id="summary-date-range" class="form-select tw-w-min">
+                    <option value="1" selected>All the time</option>
+                    <option value="1">This month</option>
+                    <option value="2">This week</option>
+                    <option value="3">Today</option>
+                </select>
+
+                <div class="tw-flex">
+                    <p class="tw-text-[#6c757d]">Invested:&nbsp;
+                    <h3 class="tw-text-[#6c757d]">R$ <span id="invested-span">0,00</span></h3>
+                    </p>
+                </div>
+                <div class="tw-flex">
+                    <p class="tw-text-[#ffc107]">Spent:&nbsp;
+                    <h3 class="tw-text-[#ffc107]">R$ <span id="spent-span">0,00</span></h3>
+                    </p>
+                </div>
+                <div class="tw-flex">
+                    <p class="tw-text-[#0dcaf0]">Profit:&nbsp;
+                    <h3 class="tw-text-[#0dcaf0]">R$ <span id="profit-span">0,00</span></h3>
+                    </p>
+                </div>
+                <div class="tw-flex tw-ml-auto">
+                    <p class="tw-text-[#198754]">Savings:&nbsp;
+                    <h3 class="tw-text-[#198754]">R$ <span id="savings-span">0,00</span></h3>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div class="tw-px-32 tw-pt-6 tw-mb-12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col" class="tw-w-[0]"><input class="form-check-input" type="checkbox"></th>
+                    <th scope="col" class="tw-w-[0]">ID</th>
+                    <th scope="col" class="tw-w-28">Value</th>
+                    <th scope="col" class="tw-w-24">Date</th>
+                    <th scope="col">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- <tr>
+                    <td class="!tw-bg-slate-800">
+                        <input class="form-check-input" type="checkbox" checked>
+                    </td>
+                    <th scope="row" class="!tw-bg-slate-800 tw-text-center">1</th>
+                    <td class="!tw-bg-slate-800">R$&nbsp;100,00</td>
+                    <td class="!tw-bg-slate-800">14/10/2024</td>
+                    <td class="!tw-bg-slate-800"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input class="form-check-input" type="checkbox">
+                    </td>
+                    <th scope="row" class="tw-text-center">2</th>
+                    <td class="">R$&nbsp;150,00</td>
+                    <td class="">15/10/2024</td>
+                    <td class=""></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input class="form-check-input" type="checkbox">
+                    </td>
+                    <th scope="row" class="tw-text-center">3</th>
+                    <td class="">R$&nbsp;200,00</td>
+                    <td class="">16/10/2024</td>
+                    <td class=""></td>
+                </tr> -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="error-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="error-modal-label">API Error</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="error-modal-text" class="tw-m-0"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
