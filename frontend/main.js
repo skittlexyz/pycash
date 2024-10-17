@@ -1,4 +1,7 @@
-const apiUrl = "http://127.0.0.1:5000/"
+const apiPort = 7777;
+const apiUrl = `http://127.0.0.1:${apiPort}/`;
+
+const cdi = 0.1065;
 
 let BRL = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -33,7 +36,8 @@ const errorModalText = $("#error-modal-text");
 
 const summary = $("#summary");
 
-let data = [];
+let investments = [];
+let results = 0;
 
 const tableLineModel = "" +
     "<tr id='<LINE-ID>'>" +
@@ -52,7 +56,9 @@ const tableLineModel = "" +
             .then(async (response) => {
                 const responseBody = await response.json();
                 console.log("Connected successfully to the API:", responseBody["message"]);
-                await fetchData();
+                await fetchInvestments();
+                await fetchResults();
+                main();
             });
     } catch (e) {
         console.warn("Error connecting to the API!");
@@ -62,31 +68,71 @@ const tableLineModel = "" +
     }
 })();
 
-function displayData() {
+function displayResults() {
+    let invested = 0.0;
+    let spent = 0.0;
+    let profit = 0.0;
+    let savings = 0.0;
+
+    for (let i = 0; i < investments.length; i++) {
+        if (Math.sign(investments[i].value) == 1) invested += investments[i].value
+        if (Math.sign(investments[i].value) == -1) spent += investments[i].value
+    }
+    savings = results;
+    profit = invested - (spent * -1);
+
+    investedSpan.text(String(invested.toFixed(2)).replace(".",",").replace("-",""));
+    spentSpan.text(String(spent.toFixed(2)).replace(".",",").replace("-",""));
+    profitSpan.text(String(profit.toFixed(2)).replace(".",",").replace("-",""));
+    savingsSpan.text(String(savings.toFixed(2)).replace(".",",").replace("-",""));
+}
+
+function displayInvestments() {
     $("tbody").html("");
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < investments.length; i++) {
         $(`#line-checkbox-${i}`).off();
         $("tbody").html(
             $("tbody").html() +
             tableLineModel
                 .replace("<LINE-ID>", `line-${i}`)
                 .replace("<LINE-CHECKBOX>", `line-checkbox-${i}`)
-                .replace("<ID>", `${data[i].id}`)
-                .replace("<VALUE-COLOR>", (data[i].value > 0 ? "#198754" : "#DC3545"))
-                .replace("<VALUE>", (data[i].value > 0 ? `<i class="bi bi-arrow-down"></i>&nbsp;${BRL.format(data[i].value).replace("-", "")}` : `<i class="bi bi-arrow-up"></i>&nbsp;${BRL.format(data[i].value).replace("-", "")}`))
-                .replace("<DATE>", `${data[i].date.replace("-", "/").replace("-", "/")}`)
-                .replace("<DESCRIPTION>", `${data[i].description}`)
+                .replace("<ID>", `${investments[i].id}`)
+                .replace("<VALUE-COLOR>", (investments[i].value > 0 ? "#198754" : "#DC3545"))
+                .replace("<VALUE>", (investments[i].value > 0 ? `<i class="bi bi-arrow-down"></i>&nbsp;${BRL.format(investments[i].value).replace("-", "")}` : `<i class="bi bi-arrow-up"></i>&nbsp;${BRL.format(investments[i].value).replace("-", "")}`))
+                .replace("<DATE>", `${investments[i].date.replace("-", "/").replace("-", "/")}`)
+                .replace("<DESCRIPTION>", `${investments[i].description}`)
         );
     };
 }
 
-async function fetchData() {
+async function fetchResults() {
+    await fetch(apiUrl + "calculate-return",
+        {
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify({
+                "cdi_rate": cdi,
+                "start_date": investments[0].date,
+                "end_date": ""
+            })
+        }
+    )
+        .then(async (response) => {
+            const responseBody = await response.json();
+            results = responseBody.total_return;
+        }).then(() => displayResults());
+}
+
+async function fetchInvestments() {
     await fetch(apiUrl + "investments")
         .then(async (response) => {
             const responseBody = await response.json();
             // console.log(responseBody);
-            data = responseBody;
-        }).then(() => displayData()).then(() => main());
+            investments = responseBody;
+        }).then(() => displayInvestments());
 }
 
 function main() {
@@ -98,14 +144,14 @@ function main() {
     })
     allLinesCheckbox.on("click", function () {
         if ($(this).is(':checked')) {
-            for (let i = 0; i < data.length; i++) {
+            for (let i = 0; i < investments.length; i++) {
                 $(`#line-${i} > *`).each(function () {
                     $(this).addClass("selected-line");
                 });
                 $(`#line-${i} > td >input`).prop("checked", true);
             }
         } else {
-            for (let i = 0; i < data.length; i++) {
+            for (let i = 0; i < investments.length; i++) {
                 $(`#line-${i} > *`).each(function () {
                     $(this).removeClass("selected-line");
                 });
@@ -114,7 +160,7 @@ function main() {
         }
     });
 
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < investments.length; i++) {
         $(`#line-checkbox-${i}`).on("click", function () {
             if ($(this).is(':checked')) {
                 console.log(1)
@@ -135,7 +181,7 @@ function main() {
         if (allLinesCheckbox.is(':checked')) {
             allLinesCheckbox.prop("checked", false);
         };
-        data = data.reverse();
-        displayData();
+        investments = investments.reverse();
+        displayInvestments();
     });
 }
