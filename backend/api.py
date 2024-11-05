@@ -111,10 +111,10 @@ def update_investment(id):
     
     investment = next((inv for inv in investments if inv['id'] == id), None)
     if investment is None:
-        abort(404)  # Not found
+        abort(404)
 
     if not request.json or 'value' not in request.json or 'date' not in request.json or 'description' not in request.json:
-        abort(400)  # Bad request
+        abort(400)
 
     investment['value'] = request.json['value']
     investment['date'] = request.json['date']
@@ -130,9 +130,9 @@ def delete_investment(id):
     
     investment = next((inv for inv in investments if inv['id'] == id), None)
     if investment is None:
-        abort(404)  # Not found
+        abort(404)
 
-    investments.remove(investment)  # Remove the investment with the matching id
+    investments.remove(investment)
     save_investments(investments)
     
     return jsonify({"message": "Investment deleted"})
