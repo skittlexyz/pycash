@@ -172,3 +172,32 @@ async function filterByDate() {
 
 startDate.on("change", filterByDate);
 endDate.on("change", filterByDate);
+
+let selectedInvestments = [];
+
+function countSelectedLines() {
+    const selectedCount = $("tbody input[type='checkbox']:checked").length;
+    console.log(`Selected Lines: ${selectedCount}`);
+}
+
+// Function to update the selectedInvestments array
+function updateSelectedInvestments(investmentId, isSelected) {
+    if (isSelected) {
+        // Add investment to the array if it is selected
+        const investment = investments.find(investment => investment.id === investmentId);
+        if (investment && !selectedInvestments.includes(investment)) {
+            selectedInvestments.push(investment);
+        }
+    } else {
+        // Remove investment from the array if it is deselected
+        selectedInvestments = selectedInvestments.filter(investment => investment.id !== investmentId);
+    }
+    console.log("Selected Investments:", selectedInvestments);  // Debugging
+}
+
+$("tbody").on("change", "input[type='checkbox']", function () {
+    const investmentId = $(this).closest("tr").attr("id").split('-')[1];  // Extract the investment ID
+    const isSelected = $(this).is(':checked');
+    updateSelectedInvestments(Number(investmentId), isSelected);
+    countSelectedLines();
+});
