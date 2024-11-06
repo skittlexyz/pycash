@@ -143,8 +143,9 @@ function main() {
     });
 
     allLinesCheckbox.on("click", function () {
-        $("tbody input[type='checkbox']").prop('checked', this.checked);
-        $("tbody tr").toggleClass("selected-line", this.checked);
+        const isChecked = this.checked; // Get the state of 'Select All' checkbox
+        $("tbody input[type='checkbox']").prop('checked', isChecked);  // Check/uncheck all checkboxes
+        $("tbody tr").toggleClass("selected-line", isChecked);  // Add/remove 'selected-line' class to all rows
     });
 
     dateOrderButton.on("click", () => {
@@ -178,26 +179,63 @@ let selectedInvestments = [];
 function countSelectedLines() {
     const selectedCount = $("tbody input[type='checkbox']:checked").length;
     console.log(`Selected Lines: ${selectedCount}`);
+    if (selectedCount < 1) {
+        deleteButton.html("Delete <i class='bi bi-x-lg'></i>");
+        deleteButton.prop("disabled", true);
+    } else {
+        deleteButton.html(`Delete (${selectedCount}) <i class="bi bi-x-lg"></i>`);
+        deleteButton.prop("disabled", false);
+    }
+    if (selectedCount != 1) editButton.prop("disabled", true);
+    else editButton.prop("disabled", false);
+
+    if (selectedCount != investments.length) allLinesCheckbox.prop("checked", false);
 }
 
 // Function to update the selectedInvestments array
-function updateSelectedInvestments(investmentId, isSelected) {
-    if (isSelected) {
-        // Add investment to the array if it is selected
-        const investment = investments.find(investment => investment.id === investmentId);
-        if (investment && !selectedInvestments.includes(investment)) {
-            selectedInvestments.push(investment);
+function updateSelectedInvestments() {
+    const lines = $("tbody > tr"); // Select all rows
+    for (let i = 0; i < lines.length; i++) {
+        const checkbox = $(lines[i]).find("td > input[type='checkbox']"); // Find the checkbox in each row
+        if (checkbox.prop('checked')) { // If the checkbox is checked
+            if (!selectedInvestments.includes(lines[i])) { // Only add if not already added
+                selectedInvestments.push(lines[i]);
+            }
+        } else { // If the checkbox is unchecked
+            const index = selectedInvestments.indexOf(lines[i]);
+            if (index !== -1) {
+                selectedInvestments.splice(index, 1); // Remove the row if unchecked
+            }
         }
-    } else {
-        // Remove investment from the array if it is deselected
-        selectedInvestments = selectedInvestments.filter(investment => investment.id !== investmentId);
     }
-    console.log("Selected Investments:", selectedInvestments);  // Debugging
+    console.log(selectedInvestments); // Log the selected investments
 }
 
 $("tbody").on("change", "input[type='checkbox']", function () {
     const investmentId = $(this).closest("tr").attr("id").split('-')[1];  // Extract the investment ID
     const isSelected = $(this).is(':checked');
-    updateSelectedInvestments(Number(investmentId), isSelected);
+    
+    // Toggle the 'selected-line' class on the individual row
+    $(this).closest("tr").toggleClass("selected-line", isSelected);
+    
+    countSelectedLines();  // Log the count of selected rows
+    updateSelectedInvestments();  // Update the selected investments array
+});
+
+allLinesCheckbox.on("change", function () {
     countSelectedLines();
+    updateSelectedInvestments();
+});
+
+editButton.on("click", async function () {
+    const row = $(selectedInvestments[0]);
+
+    const id = parseInt(row.find("th").text().trim());
+    const price = parseFloat(row.find("td.tw-font-bold").text().trim().replace("R$","").replace(",",".")); // Get the text content (e.g., "R$ 250,00")
+    const date = new Date(row.find("td:nth-child(4)").text().trim().replace("/","-")); // Assuming it's the 4th <td> in the row
+    const description = row.find("td:last-child").text().trim();
+
+    try {
+        await fetch
+    }
 });

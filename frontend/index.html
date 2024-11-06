@@ -25,7 +25,7 @@
     </script>
     <script src="./main.js" defer></script>
     <style>
-        .selected-line {
+        .selected-line > * {
             background-color: rgb(30, 41, 59) !important;
         }
     </style>
@@ -55,9 +55,9 @@
                     <p class="tw-text-center tw-m-0 tw-mr-2">Options:</p>
                     <button id="add-button" type="button" class="btn btn-success tw-flex tw-gap-2">Add<i
                             class="bi bi-plus-lg"></i></button>
-                    <button id="delete-button" type="button" class="btn btn-danger tw-flex tw-gap-2">Delete<i
+                    <button id="delete-button" type="button" class="btn btn-danger tw-flex tw-gap-2" disabled>Delete<i
                             class="bi bi-x-lg"></i></button>
-                    <button id="edit-button" type="button" class="btn btn-warning tw-flex tw-gap-2">Edit<i
+                    <button id="edit-button" type="button" class="btn btn-warning tw-flex tw-gap-2" disabled>Edit<i
                             class="bi bi-pencil"></i></button>
                     <button id="collapse-expand-button" type="button" class="btn btn-info"><i
                             class="bi bi-arrow-up"></i></button>
@@ -142,6 +142,24 @@
                     <p id="error-modal-text" class="tw-m-0"></p>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="edit-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="error-modal-label">Edit Investment</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="error-modal-text" class="tw-m-0"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
